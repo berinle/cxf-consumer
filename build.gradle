@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.5
+version = 1.0
+
+repositories {
+	mavenCentral()
+	flatDir(dirs: "lib")
+}
+
+libVersions = [cxf: '2.2.9']
+wsdlUrl = "http://localhost:8080/sample-xfire/services/employeeService?wsdl"
+
+dependencies {
+	compile "org.apache.cxf:cxf-rt-frontend-jaxws:${libVersions.cxf}"	
+	compile "org.apache.cxf:cxf-rt-transports-http:${libVersions.cxf}"	
+	compile "org.apache.cxf:cxf-rt-transports-http-jetty:${libVersions.cxf}"
+	compile "org.apache.cxf:cxf-tools-wsdlto-core:${libVersions.cxf}"
+}
+
+task listJars << {
+	configurations.compile.each {File f -> println f.name }
+}
+
+task initProject(description: 'Initialize project directory structure.') << {
+  	sourceSets.all*.java.srcDirs*.each { it.mkdirs() }
+    sourceSets.all*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+task generateClientStubs << {
+	ant.java(classname:'org.apache.cxf.tools.wsdlto.WSDLToJava', fork:true, classpath:"${sourceSets.main.runtimeClasspath.asPath}") {
+		arg(value: '-client')
+		arg(value: '-d')
+		arg(value: 'src/main/java')
+		arg(value: "${wsdlUrl}")
+		arg(value: '-b')
+		arg(value: 'custombinding.xml')		
+	}
+}
+
+ant.importBuild 'build.xml'
+task doAnt(dependsOn: gc) << {
+	println "Done generating stubs"
+}
+
+task run << {
+	ant.java(classname: 'cxfclient.WSClient', fork:true, classpath:"${sourceSets.main.runtimeClasspath.asPath}")
+}

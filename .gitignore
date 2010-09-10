@@ -1,0 +1,6 @@
+.gradle/
+build/
+
+#exclude intellij generated files
+cxf-consumer.*
+

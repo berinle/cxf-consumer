@@ -1,0 +1,24 @@
+<project basedir="." default="gc">
+
+	<property name="src" location="src/main/java"/>
+	
+	<path id="cp">
+		<fileset dir="c:/devtools/webservice/apache-cxf-2.2.9/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="gc">
+		<echo message="in gc start (ant)"/>
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true" classpathref="cp">
+			<arg value="-client"/>
+			<arg value="-d"/>
+			<arg value="src/main/java"/>			
+			<arg value="-b"/>
+			<arg value="custombinding.xml"/>			
+			<arg value="http://localhost:8080/sample-xfire/services/employeeService?wsdl"/>
+		</java>
+		<echo message="in gc end (ant)"/>
+	</target>
+	
+</project>

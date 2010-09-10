@@ -1,0 +1,3 @@
+This illustrates the example of a standalone client to consume a web service via Apache CXF.
+
+It also illustrates invoking an ant target via gradle.
